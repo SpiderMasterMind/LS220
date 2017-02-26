@@ -1,0 +1,48 @@
+body {
+  background-color: #eee196;
+}
+
+.container {
+  background-color: #ffffff;
+  padding-bottom: 200px;
+}
+
+.checklist {
+  width: 30%;
+  float: left;
+}
+
+h1 {
+  padding-top: 25px;
+  margin-left: 30%;
+}
+
+.itemlist {
+  display: inline-block;
+  width: 70%;
+  overflow: hidden;
+}
+
+.itemlist li {
+  display: block;
+  width: 80%;
+  border-bottom: 2px solid #C0C0C0;
+}
+
+ul { list-style: none;}
+
+a { 
+  display: block;
+  text-decoration: none;
+  color: black;
+  width: 100%;
+  padding: 10px 0 10px 0;
+}
+
+.itemlist li:last-child {
+  border-bottom: none;
+}
+
+a:hover {
+  background-color: #f4d442;
+}
