@@ -42,20 +42,20 @@ $(document).ready(function() {
     "category": "Xbox One"
   }],
       $items = $('.itemlist li'),
-      $categories = $(':checkbox');
+      $categories = $(':checkbox'),
+      toggled_name,
+      toggled_ids,
+      element_id;
 
   $categories.on('change', function() {
-    var toggled_ids,
-        toggled_name = $(this).attr('name');
-
+    toggled_name = $(this).attr('name');
     toggled_ids = data.filter(function(element) {
       return element["category"] === toggled_name;
     }).map(function(obj) {
       return obj["id"]
     });
-
     $.each($items, function() {
-      var element_id = $(this).data('id');
+      element_id = $(this).data('id');
       if (toggled_ids.indexOf(element_id) !== -1) {
         $(this).toggle();
       }
