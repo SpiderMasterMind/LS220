@@ -1,0 +1,64 @@
+@import url("whitespace-reset.css");
+
+* {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 200;
+  font-size: 16px ;
+}
+
+.tabs {
+  text-align: center;
+}
+
+.tabbed-content article + article { 
+  display: none;
+}
+
+h2 {
+  font-weight: 400;
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+ul {
+  margin-bottom: 40px;
+}
+
+li {
+  display: inline-block;
+  background-color: #dee2e8;
+  border-radius: 8%;
+  cursor: pointer;
+  margin: 10px 5px 0 0;
+  padding: 2px;
+}
+
+li:hover {
+  background-color: dodgerblue;
+}
+
+a {
+  text-decoration: none;
+  color: #000000;
+}
+
+.active {
+  background-color: dodgerblue;
+}
+
+.tabbed-content {
+  width: 40%;
+  margin: 0 auto;
+  background-color: #dee2e8;
+  height: 300px;
+}
+
+h2 + ul {
+  text-align: center;
+}
+
+textarea {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 50px;
+}
