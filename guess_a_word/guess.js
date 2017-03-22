@@ -1,6 +1,3 @@
-
-// game object states: chosen word, incorrect guesses, letters guessed, allowed wrong guesses
-// methods: get random word, create blanks, initialize states
 $(document).ready(function() {
   var $message = $('#message');
   var $spaces = $('#spaces');
@@ -9,7 +6,7 @@ $(document).ready(function() {
   var $replay = $('#replay');
 
   var randomWord = (function() {
-    var words = ['testing'];
+    var words = ['hamburgers', 'pumps', 'chilcat', 'mcglocky', 'invited', 'rhythm'];
     return function randomWord() {
       var idx = (Math.floor(Math.random() * words.length -1))
       return words.splice(idx, 1)[0];
@@ -17,47 +14,60 @@ $(document).ready(function() {
   })();
 
   var Game = {
-    setLetterSpaces: function() {
-      for (var i = 0; i < this.word.length; i += 1) {
-        $spaces.append('<span></span> ');
-        $guesses.append('<span></span> ');
-      }
-    },
-    bindEvents: function() {
+    bindCharacterPresses: function() {
       $(window).keypress(this.checkLetter.bind(this));
     },
     checkLetter: function(event) {
       var keyPressed = String.fromCharCode(event.which); 
       if (this.validKeypress(event.which)) {
         this.processKeypress(keyPressed);
+        this.winOrLose();
       }
-      // if (won?) correctLetters === word? Check this {
-      //   processWin;
-      // }
-      // if (lost?) (incorrectGuesses === maxGuesses) {
-      //   processLost (display loss etc)
-      // }
     },
     validKeypress: function(charCode) {
       if (charCode >= 97 && charCode <= 122) {
         return true;
       }
     },
+    winOrLose: function() {
+      if (this.correctLetters.length === this.word.length) {
+        $('body').addClass('win');
+        this.playAgain();
+      }
+      if (this.incorrectGuesses === this.maxGuesses) {
+        $('body').addClass('lose');
+        this.completeWord();
+        this.playAgain();
+      }
+    },
+    playAgain: function() {
+      $message.text('Press space for a new word');
+      // var self = this; Can use self or bind to overcome context issue
+      $(window).on('keypress', function(event) {
+        event.preventDefault();
+        if (event.which === 32) {
+          $(window).off();
+          $message.text('');
+          this.clearPreviousDisplay();
+          newGame = Object.create(Game).init();
+        }
+      }.bind(this));
+    },
+    completeWord: function() {
+      var $span = $spaces.find('span');
+      this.word.split('').forEach(function(character, idx) {
+        if ($span.eq(idx).text() === "") {
+          $span.eq(idx).text(character.toUpperCase()).css('color', '#b00b00');
+        }
+      });
+    },
     processKeypress: function(charPressed) {
-      console.log('valid key: ');
-      console.log(charPressed);
       if (this.duplicateGuess(charPressed)) {
         return;
-      }
-      if (this.incorrectGuess(charPressed)) {
-        this.incorrectLetters.push(charPressed);
-        this.removeApple();
-        this.incorrectGuesses += 1;
-        return;
-      }
-      if (this.correctGuess(charPressed)) {
-        this.updateCorrectLetters(charPressed);
-        //this.updateSpanDisplay(charPressed);
+      } else if (this.incorrectGuess(charPressed)) {
+        this.processIncorrectLetter(charPressed);
+      } else if (this.correctGuess(charPressed)) {
+        this.processCorrectLetter(charPressed);
       }
     },
     duplicateGuess: function(charPressed) {
@@ -65,27 +75,43 @@ $(document).ready(function() {
         return true;
       }
     },
+    correctGuess: function(charPressed) {
+      if (this.word.indexOf(charPressed) !== -1 && this.correctLetters.indexOf(charPressed) === -1) {
+        return true;
+      }
+    },
+    processCorrectLetter: function(charPressed) {
+      this.word.split('').forEach(function(character, idx) {
+        if (character === charPressed) {
+          this.updateCorrectLetterDisplay(character, idx);
+          this.updateCorrectLettersArray(character);
+        }
+      }.bind(this));
+    },
+    processIncorrectLetter: function(charPressed) {
+      this.updateIncorrectLettersArray(charPressed);
+      this.removeAppleDisplay();
+      this.updateIncorrectLetterDisplay(charPressed);
+      this.incorrectGuesses += 1;
+    },
+    updateIncorrectLettersArray: function(charPressed) {
+      this.incorrectLetters.push(charPressed);
+    },
     incorrectGuess: function(charPressed) {
       if (this.word.indexOf(charPressed) === -1) {
         return true;
       }
     },
-    correctGuess: function(charPressed) {
-      if (this.word.indexOf(charPressed) !== -1) {
-        return true;
-      }
+    updateIncorrectLetterDisplay: function(charPressed) {
+      $guesses.append('<span>' + charPressed.toUpperCase() + '</span> ');
     },
-    updateCorrectLetters: function(charPressed) {
-      this.displayCorrectLetter();
-      this.word.split('').forEach(function(character, idx) {
-        console.log(character, idx);
-        // this.displayCorrectLetter();
-      });
+    updateCorrectLetterDisplay: function(charPressed, idx) {
+      $spaces.find('span').eq(idx).text(charPressed);
     },
-    displayCorrectLetter: function(charPressed, idx) {
-      console.log('!')
+    updateCorrectLettersArray: function(character) {
+      this.correctLetters.push(character);
     },
-    removeApple: function() {
+    removeAppleDisplay: function() {
       if (this.incorrectGuesses === 0) {
         $apples.addClass('guess_1');
       } else {
@@ -93,19 +119,38 @@ $(document).ready(function() {
         $apples.addClass('guess_' + String(this.incorrectGuesses + 1));
       }
     },
+    setWordSpacesDisplay: function() {
+      for (var i = 0; i < this.word.length; i += 1) {
+        $spaces.append('<span></span> ');
+      }
+    },
+    clearPreviousDisplay: function() {
+      $spaces.empty('span');
+      $guesses.empty('span');
+      $('body').removeClass();
+      $apples.removeClass();
+    },
+    checkForWords: function() {
+      if (this.word.length < 1) {
+
+      }
+    },
     init: function() {
       this.word = randomWord();
-      this.incorrectLetters = [];
-      this.incorrectGuesses = 0;
-      this.correctLetters = [];
-      this.maxGuesses = 6;
-      this.setLetterSpaces();
-      this.bindEvents();
+      if (this.word === undefined) {
+        $message.text("You're out of words!")
+      } else {
+        this.incorrectLetters = [];
+        this.incorrectGuesses = 0;
+        this.correctLetters = [];
+        this.maxGuesses = 6;
+        this.setWordSpacesDisplay();
+        this.bindCharacterPresses();
+      }
       return this;
     },
   };
 
   var newGame = Object.create(Game).init();
-  // The context of a constructor invocation is the newly created object. newGame is this
-
+  // The context of a constructor invocation with new is the newly created object.
 });
