@@ -83,8 +83,8 @@ $(document).ready(function() {
     processCorrectLetter: function(charPressed) {
       this.word.split('').forEach(function(character, idx) {
         if (character === charPressed) {
-          this.updateCorrectLetterDisplay(character, idx);
-          this.updateCorrectLettersArray(character);
+          this.updateWindowSpan(character, idx);
+          this.addToCorrectLettersArray(character);
         }
       }.bind(this));
     },
@@ -105,19 +105,15 @@ $(document).ready(function() {
     updateIncorrectLetterDisplay: function(charPressed) {
       $guesses.append('<span>' + charPressed.toUpperCase() + '</span> ');
     },
-    updateCorrectLetterDisplay: function(charPressed, idx) {
+    updateWindowSpan: function(charPressed, idx) {
       $spaces.find('span').eq(idx).text(charPressed);
     },
-    updateCorrectLettersArray: function(character) {
+    addToCorrectLettersArray: function(character) {
       this.correctLetters.push(character);
     },
     removeAppleDisplay: function() {
-      if (this.incorrectGuesses === 0) {
-        $apples.addClass('guess_1');
-      } else {
-        $apples.removeClass();
-        $apples.addClass('guess_' + String(this.incorrectGuesses + 1));
-      }
+      if (this.incorrectGuesses > 0) { $apples.removeClass(); }
+      $apples.addClass('guess_' + String(this.incorrectGuesses + 1));
     },
     setWordSpacesDisplay: function() {
       for (var i = 0; i < this.word.length; i += 1) {
@@ -129,11 +125,6 @@ $(document).ready(function() {
       $guesses.empty('span');
       $('body').removeClass();
       $apples.removeClass();
-    },
-    checkForWords: function() {
-      if (this.word.length < 1) {
-
-      }
     },
     init: function() {
       this.word = randomWord();
