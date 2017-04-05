@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  var $required;
+  var $notRequired;
   var $form = $('#contact-form');
   var $submit = $form.find('input[value=Submit]')
   var $contacts = $('#contact-list');
@@ -10,6 +12,7 @@ $(document).ready(function() {
   var $tags = $('#tags');
   var $edit;
   var $del;
+  var $noContactsMessage = $('#no-contact-message');
   var $add_new = $('[id=go-to-form]');
   $form.hide();
 
@@ -17,40 +20,33 @@ $(document).ready(function() {
   var template = Handlebars.compile(source);
   
   var contactList = {
-    bindEvents: function() {
-      $submit.on('click', this.submitForm.bind(this));
-      $add_new.on('click', this.showFormPane.bind(this));
-      $cancel.on('click', this.showContactsPane);
-      this.bindContactButtons.bind(this);
-    },
-    bindContactButtons: function() {
-      $edit = $('.edit');
-      $edit.on('click', this.editContactActions.bind(this));
-      $del = $('.delete');
-      $del.on('click', this.deleteContactActions.bind(this));
-    },
     deleteContactActions: function() {
       event.preventDefault();
 
       var contactIndex = $(event.target).closest('div.contact').index();
+      contactIndex = contactIndex - 1;
       var contactObject = this.collection[contactIndex]
       var result = window.confirm('Are you sure you want to delete the contact: ' + contactObject.fullname + '?');
       if (result) {
-        this.collection.splice(contactIndex,1);
+        this.collection.splice(contactIndex, 1);
         localStorage.setItem('contact-data', JSON.stringify(this.collection));
-        this.showContactsPane();
-        // function to possibly display no contacts message required!
-        // cancel after edit doesnt rebind properly
         this.getContactsFromStorage();
+        if (localStorage.getItem('contact-data') == "[]") {
+          $('#no-contact-message').css('display', 'block');
+          this.showContactsPane();
+        }
       } else {
+        $('#no-contact-message').css('display', 'none');
         this.showContactsPane();
       }
     },
+    // cancel after edit doesnt rebind properly
     editContactActions: function() {
       event.preventDefault();
-      this.showFormPane();
+      this.switchPaneView();
 
       var contactIndex = $(event.target).closest('div.contact').index();
+      contactIndex = contactIndex - 1;
       var contactObject = this.collection[contactIndex]
       $name.val(contactObject.fullname);
       $email.val(contactObject.email);
@@ -65,7 +61,7 @@ $(document).ready(function() {
       $cancel.off();
       $cancel.on('click', function() {
         $submit.on('click', this.submitForm);
-        this.showContactsPane();
+        this.switchPaneView();
       }.bind(this));
     },
     submitEdit: function(idx) {
@@ -74,29 +70,11 @@ $(document).ready(function() {
       localStorage.setItem('contact-data', JSON.stringify(this.collection));
       $('.submit').off()
       $submit.on('click', this.submitForm.bind(this));
-      this.showContactsPane();
+      this.switchPaneView();
       this.getContactsFromStorage();
     },
-    showFormPane: function() {
-      this.clearContactsField();
-      $contacts.animate({
-        height: 0,
-      }, 700, function() {
-        $contacts.css('height', 'auto').css('display', 'none');
-        $form.css('display', 'block').slideDown();
-      });
-    },
-    showContactsPane: function() {
-      $form.animate({
-        height: 0,
-      }, 450, function() {
-        $form.css('height', 'auto').css('display', 'none');
-        $contacts.css('display', 'block').slideDown();
-      });
-    },
     createContactObject: function() {
-      var contact = new Contact($name.val(), $email.val(), $phone.val(), $tags.val());
-      return contact;
+      return new Contact($name.val(), $email.val(), $phone.val(), $tags.val());
     },
     clearContactsField: function() {
       $name.val("");
@@ -111,9 +89,9 @@ $(document).ready(function() {
       }
       this.collection.push(this.createContactObject());
       localStorage.setItem('contact-data', JSON.stringify(this.collection));
-      this.showContactsPane();
+      $('#no-contact-message').css('display', 'none');
+      this.switchPaneView();
       this.getContactsFromStorage();
-
     },
     getContactsFromStorage: function() {
       var data = JSON.parse(localStorage.getItem('contact-data'));
@@ -122,21 +100,50 @@ $(document).ready(function() {
       this.bindContactButtons();
     },
     renderContactTemplates: function() {
-      $contacts.html(template(this.collection));
+      $('#contact-list').html(template(this.collection)); // guard clause so we either append to the section or add to it?
+    },
+    bindEvents: function() {
+      $submit.on('click', this.submitForm.bind(this));
+      $add_new.on('click', this.switchPaneView.bind(this));
+      $cancel.on('click', this.switchPaneView.bind(this));
+      this.bindContactButtons.bind(this);
+    },
+    bindContactButtons: function() {
+      $edit = $('.edit');
+      $edit.on('click', this.editContactActions.bind(this));
+      $del = $('.delete');
+      $del.on('click', this.deleteContactActions.bind(this));
     },
     init: function() {
       this.collection;
       if (localStorage.getItem('contact-data') !== null) {
-        $('#no-contact-message').hide()
+        $('#no-contact-message').css('display', 'none');
         this.getContactsFromStorage();
       } else {
-        $('#no-contact-message').show()
+        $('#no-contact-message').css('display', 'block');
       }
       this.showContactsPane();
       this.bindEvents();
     },
+    showContactsPane: function() {
+      $contacts.css('display', 'block');
+    },
+    switchPaneView: function() { // pass view in to this for refactor?
+      if ($('#contact-list').is(':visible')) {
+        $required = $form;
+        $notRequired = $contacts;
+      } else {
+        $required = $contacts;
+        $notRequired = $form;
+      }
+      $notRequired.animate({
+        height: 0,
+      }, 700, function() {
+        $notRequired.css('height', 'auto').css('display', 'none');
+        $required.css('display', 'block').slideDown();
+      });
+    },
   };
-
   var newList = Object.create(contactList).init();
   function Contact(fullname, email, phone, tags) {
     this.fullname = fullname;
@@ -145,3 +152,4 @@ $(document).ready(function() {
     this.tags = tags;
   }
 });
+

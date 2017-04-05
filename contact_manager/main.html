@@ -24,18 +24,18 @@
           <input id="go-to-form" type="submit" value="Add contact"></input>
         </div>
         <script type="text/x-handlebars-template" id="contact-template">
-          {{#each this}}
-            <div class="contact">
-              <ul>
-                <li>{{fullname}}</li>
-                <li>{{email}}</li>
-                <li>{{phone}}</li>
-                <li>{{tags}}</li>
-              </ul>
-              <input type="submit" value="Delete" class="delete"></input>
-              <input type="submit" value="Edit" class="edit"></input>
-            </div>
-          {{/each}}
+        {{#each this}}
+          <div class="contact">
+            <ul>
+              <li>{{fullname}}</li>
+              <li>{{email}}</li>
+              <li>{{phone}}</li>
+              <li>{{tags}}</li>
+            </ul>
+            <input type="submit" value="Delete" class="delete"></input>
+            <input type="submit" value="Edit" class="edit"></input>
+          </div>
+        {{/each}}
         </script>
       </section>
       <section id="contact-form">
