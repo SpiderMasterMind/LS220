@@ -25,7 +25,7 @@ $(document).ready(function() {
   var $nameMessage = $('#validate-name')
   var $phoneMessage = $('#validate-phone')
   var $emailMessage = $('#validate-email')
-  var $add_new = $('[id=go-to-form]');
+  var $add_new = $('.go-to-form');
   var source = $("#contact-template").html();
   var template = Handlebars.compile(source);
 

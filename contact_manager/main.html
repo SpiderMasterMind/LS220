@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>Contact Manager</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
     <script src="scripts/main.js"></script>
@@ -13,15 +14,15 @@
       <h1>Contact Manager</h1>
       <h2>Made with JQuery, Handlebars and Local Storage</h2>
       <fieldset>
-          <input id="go-to-form" type="submit" value="Add contact"></input>
-          <input id="search-bar" type="text" placeholder="Search for contact"></input>
+          <input class="go-to-form" type="submit" value="Add contact">
+          <input id="search-bar" type="text" placeholder="Search for contact">
         </fieldset>
     </header>
     <main>
       <section id="contact-list">
         <div id="no-contact-message">
           <h2>There are no contacts</h2>
-          <input id="go-to-form" type="submit" value="Add contact"></input>
+          <input class="go-to-form" type="submit" value="Add contact">
         </div>
         <div id="contact-container">
           <script type="text/x-handlebars-template" id="contact-template">
@@ -34,8 +35,8 @@
                 <li>{{phone}}</li>
                 <li class="tags">{{tags}}</li>
               </ul>
-              <input type="submit" value="Delete" class="delete"></input>
-              <input type="submit" value="Edit" class="edit"></input>
+              <input type="submit" value="Delete" class="delete">
+              <input type="submit" value="Edit" class="edit">
             </div>
           {{/each}}
           </script>
@@ -45,16 +46,16 @@
       <section id="contact-form">
         <fieldset>
           <label for="name">Full Name</label>
-          <input type="text" id="name" autocapitalize="none"></input>
+          <input type="text" id="name">
           <span id="validate-name"></span>
           <label for="email">Email</label>
-          <input type="text" id="email"></input>
+          <input type="text" id="email">
           <span id="validate-email"></span>
           <label for="phone">Telephone</label>
-          <input type="text" id="phone" autocapitalize="none"></input>
+          <input type="text" id="phone">
           <span id="validate-phone"></span>
           <label for="tags">Tags</label>
-          <input type="text" id="tags" autocapitalize="none"></input>
+          <input type="text" id="tags">
           <span id="validate-tags"></span>
           <input type="submit" value="Submit" class="submit">
           <input type="submit" value="Cancel" class="cancel">
