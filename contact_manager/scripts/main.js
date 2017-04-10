@@ -321,6 +321,6 @@ $(document).ready(function() {
     this.surname = nameArray.join("");
     this.email = email;
     this.phone = phone;
-    this.tags = "#";
+    this.tags = tags;
   }
 });
