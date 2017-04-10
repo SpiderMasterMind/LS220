@@ -112,7 +112,7 @@ $(document).ready(function() {
         this.clearFieldErrors();
         if (this.fieldContentValid()) {
           $submit.off();
-          this.updateContacts(); // rename updateContacts?
+          this.updateContacts();
           this.bindInitialEvents.call(this);
           this.clearSearchBar();
         } else {
