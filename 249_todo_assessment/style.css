@@ -1,0 +1,402 @@
+@import url("whitespace_reset.css");
+
+/* GENERAL */
+
+body {
+  font: normal 16px Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  font-weight: 200;
+}
+
+.wrapper {
+  overflow: hidden;
+  padding: 0 100px 0 20px;
+}
+
+nav {
+  float: left;
+  width: 335px;
+  background: #464f77;
+  padding-bottom: 600px;
+}
+
+/* HAMBURGER TOGGLE NORMAL VIEW */
+
+.hamburger_toggle {
+  display: none;
+}
+
+/* INFO BAR */
+
+.info_bar span {
+  display: inline-block;
+  font-size: 21px;
+  margin-top: 76px;
+}
+
+.main_table thead th:hover {
+  cursor: pointer;
+}
+
+/* MAIN TODOS NUMBER */
+#main_count {
+  color: white;
+  background-color: #148fd5;
+  border-radius: 100%;
+  padding: 0 5px;
+  margin-left: 8px;
+}
+
+/* MAIN Todo List */
+/* ITEM AND TABLE ALIGNMENT */
+
+.main_table {
+  margin-top: 30px;
+  width: 100%;
+}
+
+.main_table td:nth-child(n){
+  width: 95%;
+  padding: 14px 0 14px 0;
+}
+
+.main_table img {
+  mix-blend-mode: multiply;
+}
+
+.main_table td:nth-child(2n) {
+    padding-left: 10px;
+    display: block;
+}
+
+.main_table tbody td:nth-child(2n):hover {
+  background-color: #e2626e;
+}
+
+.main_table th {
+    margin-right: auto;
+    text-align: left;
+    display: block;
+    height: 10px;
+    padding: 6px 0;
+    color: #148fd5;
+    width: 160px;
+}
+
+/* MAIN TABLE ICONS AND TEXT STYLES */
+/* ICONS */
+
+.main_table th::before {
+  content: url(images/icon_add.png);
+  margin-right: 15px;
+}
+
+label {
+  margin-left: 20px;
+}
+
+tr label::before {
+  content: url(images/icon_check_not_complete.png);
+  margin-right: 15px;
+}
+
+dd:hover {
+  cursor: pointer;
+}
+
+.completed {
+  color: #b9b9b9;
+  text-decoration: line-through;
+}
+
+/* HIGHLIGHTS TEXT */
+.main_table tbody label:hover{
+  color: #148fd5;
+}
+
+.main_table tbody td:hover {
+  background-color: #9ecae3;
+}
+
+
+
+/* BORDER LINES */
+
+.main_table tr {
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.main_table tbody > tr {
+  border-top: 1px solid #e7e7e7;
+}
+
+.main_table tr:last-child {
+  border-bottom: 0;
+}
+
+/* NAV STYLING */
+/* POSITIONING */
+
+nav {
+  color: #6b7292;
+  font-weight: 300;
+  height: 100%;
+}
+
+.nav_todos {
+  margin-top: 40px;
+}
+
+.nav_todos img {
+  position: relative;
+  left: 88px;
+  top: 36px;
+}
+
+.completed_todos img {
+  position: relative;
+  left: 88px;
+  top: 36px;
+}
+
+#nav_todos_heading,
+#completed_todos_heading {
+  color: white;
+  font-weight: 400;
+}
+
+dl {
+  width: 100%;
+}
+
+dd, dt{
+  display: inline-block;
+}
+
+dt {
+  color: rgba(255, 255, 255, 0.6);
+  background-color: #6b7292;
+  border-radius: 100%;
+  padding: 0 4.5px;
+}
+
+dd {
+  padding: 11px 30px 11px 120px;
+}
+
+.selection {
+  background-color: #383f5f;
+  color: white;
+}
+
+.selection dt {
+  background-color: #148fd5;
+  color: white;
+}
+
+dd {
+  width: 110px;
+}
+
+.strikeout {
+  text-decoration: line-through;
+}
+
+
+
+/* TEXT STYLING */
+
+#heading {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+
+/* NAV item height/padding */
+
+/* FORM STYLING */
+
+input[type="checkbox"] {
+  position: absolute;
+  top: -9999px;
+  right: -9999px;
+}
+
+input[type="checkbox"]:checked + p { 
+  display: block;
+}
+
+
+.form input,
+select,
+textarea {
+  font-size: 18px;
+}
+
+/*MODAL BOX*/
+/*input[type="checkbox"]:checked + .background .form {*/
+.background .form {
+  display: block;
+  position: fixed;
+  top: 49%;
+  left: 56.5%;
+  transform: translate(-50%, -50%);
+  width: 576px;
+  max-width: 100%;
+  max-height: 100%;
+  height: 400px;
+  background: #ffffff;
+  z-index: 2;
+}
+
+/*DARK MODAL BACKGROUND*/
+.background {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  content: "";
+  background: rgba(0,0,0,0);
+}
+
+.show-modal { 
+  display: block;
+  background: rgba(0,0,0,0.5);
+}
+
+.form_title label,
+.form_date label,
+.form_description label {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.form_title label {
+  padding-right: 55px;
+}
+
+.form_title {
+  padding: 30px 40px 40px 30px;
+}
+
+.form_title input[type="text"] {
+  display: inline-block;
+  width: 396px;
+  margin-bottom: 0;
+  vertical-align: middle;
+  height: 36px;
+  border: 1px solid #b3b3b3;
+  float: right;
+  box-sizing: border-box;
+}
+
+.form_date label {
+  margin-left: 31px;
+  margin-right: 38px;
+  padding-bottom: 44px;
+}
+
+.form_date {
+  box-sizing: border-box;
+  height: 62px;
+}
+
+.select_style {
+    box-sizing: border-box;
+    padding: 5px 0;
+    margin: 0;
+    border: 1px solid #b3b3b3;
+    width: 22.3%;
+    height: 36px;
+
+    overflow: hidden;
+    background-color: #fff;
+    display: inline-block;
+}
+
+.select_style select {
+    padding: 5px 8px;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    background-image: none;
+}
+
+.form_description {
+  height: 80px;
+  margin-bottom: 24px;
+}
+
+.form_description label {
+  padding: 0 4px 0 30px;
+  margin-bottom: 0;
+}
+
+textarea {
+  width: 394px;
+  height: 144px;
+  border: 1px solid #b3b3b3;
+  padding: 0;
+  resize: none;
+  float: right;
+  margin-right: 40px
+}
+
+/* BUTTONS */
+
+.submit_row {
+  display: inline-block;
+  margin: 26px 0 0 141px;
+  width: 80%;
+}
+
+.submit_row button {
+  display: inline-block;
+  height: 30px;
+  width: 42.3%;
+  border: none;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  background: #148fd5;
+  text-align: center;
+}
+
+
+/* MEDIA QUERY STUFF */
+
+@media (max-width: 600px) {
+  nav {
+    display: none;
+  }
+  .wrapper {
+    margin-left: 30px;
+    overflow: hidden;
+    padding-left: 20px;
+  }
+  /*  HAMBURGER TOGGLER */
+
+  #menu-toggle {
+    display: none; /* hide the checkbox */
+  }
+  #menu {
+    display: none;
+  }
+  #menu-toggle:checked ~ nav {
+    display: block;
+  }
+
+  .hamburger_toggle {
+    display: block;
+    padding-top: 23px;
+  }
+
+  .info_bar span {
+    margin-top: 36px;
+  }
+}
+
