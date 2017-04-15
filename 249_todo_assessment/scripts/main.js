@@ -1,6 +1,3 @@
-// update main numberin blue
-// make save retain current state of todo (currently it sets it as new)
-// toggling doesnt work
 var toDoList = {
   init: function() {
     this.mainItemsSource = $('#todo-item').html();
@@ -8,22 +5,25 @@ var toDoList = {
     this.toDosSource = $('#nav-todos-template').html();
     this.completedSource = $('#completed-todos-template').html();
     this.initialiseStorage();
-    this.refreshPage('all', 1);
-    this.sortedAllToDosByDate;
-    this.sortedCompletedByDate;
+    this.refreshPage();
     this.sortedAllToDos;
+    this.sortedCompleted;
+    this.CompletedToDosNavObj;
+    this.allToDosNavObj;
     this.completedToDos;
     this.listType = 'all';
-    this.itemClicked = 1;
-  },
-  refreshPage: function() {
-    this.renderViewportItems();
-    this.bindEvents();
+    this.itemClicked = 'All Todos';
+    this.refreshPage();
   },
   initialiseStorage: function() {
     if (localStorage.getItem('todolist') === null) {
       localStorage.setItem('todolist', '[]');
     }
+    $('#main_count').text(JSON.parse(localStorage.getItem('todolist')).length);
+  },
+  setHeadingInfo: function() {
+    $('#main_heading').text(this.itemClicked);
+    $('#main_count').text($('.main_table tbody').find('label').length);
   },
   bindEvents: function() {
     // this var affects how the modal is invoked, new todo = undefined, todo id x = x
@@ -40,20 +40,47 @@ var toDoList = {
   bindDeletions: function() {
     $('.delete').on('click', this.deleteItem.bind(this));
   },
-  renderViewportItems: function() {
-    console.log(this.listType, this.itemClicked);
-    var data = JSON.parse(localStorage.getItem('todolist'));
-    this.markCompleteItems(data);
-    this.renderNav(data); //
-    this.setNavHighlight();
-    this.renderMainTable(data);
+  refreshPage: function() {
+    this.renderViewportItems();
+    this.bindEvents();
   },
-  renderMainTable: function(data) {
-    if (this.listType === 'all' && this.itemClicked === 1) {
+  renderViewportItems: function() {
+    var data = JSON.parse(localStorage.getItem('todolist'));
+    if (this.listType === undefined) {
+      $('.main_table tbody').html(this.mainItemsTemplate(data));
+    } else {
+      this.renderRefinedItems();
+    }
+    this.markCompleteItems(data);
+    this.renderNav(data);
+    this.setNavHighlight();
+  },
+  renderRefinedItems: function() {
+    var itemDate = this.itemClicked;
+    var data = JSON.parse(localStorage.getItem('todolist'));
+    var result;
+    this.sortCompletedItems(data);
+
+    if (this.itemClicked === "All Todos") {
       $('.main_table tbody').html(this.mainItemsTemplate(data));
     } else if (this.listType === 'all') {
-      // $('.main_table tbody').html(this.mainItemsTemplate(this.sortedAllToDosByDate[itemClicked - 1]));
+      result = data.filter(function(obj) {
+        if (obj.date === itemDate) {
+          return true;
+        }
+      });
+      $('.main_table tbody').html(this.mainItemsTemplate(result));
+    } else if (this.listType === 'completed' && this.itemClicked === 'Completed') {
+      $('.main_table tbody').html(this.mainItemsTemplate(this.completedToDos));
+    } else if (this.listType === 'completed') {
+      result = this.completedToDos.filter(function(obj) {
+        if (obj.date === itemDate) {
+          return true;
+        }
+      });
+      $('.main_table tbody').html(this.mainItemsTemplate(result));
     }
+    this.setHeadingInfo();
   },
   markCompleteItems: function(data) {
     $.each(data, function(index, obj) {
@@ -64,16 +91,29 @@ var toDoList = {
       }
     });
   },
+  sortCompletedItems: function(data) {
+    data.sort(function(a, b) {
+      if ((a.completed && b.completed) || (!a.completed && !b.completed)) {
+        return 0;
+      } else if (a.completed && !b.completed) {
+        return 1;
+      } else if (!a.completed && b.completed) {
+        return -1;
+      }
+    });
+  },
   setNavHighlight: function() {
     $('nav dl').removeClass('selection');
-    if (this.listType === 'all') {
-      $('.nav_todos').children('dl').eq(this.itemClicked - 1).addClass('selection')
+    if (this.listType === undefined) {
+      this.itemClicked = 'All Todos';
+      $('.nav_todos dl dd:contains(All Todos)').closest('dl').addClass('selection');
+    } else if (this.listType === 'all') {
+      $('.nav_todos dl dd:contains(' + this.itemClicked + ')').closest('dl').addClass('selection');
     } else if (this.listType === 'completed') {
-      $('.completed_todos').children('dl').eq(itemClicked - 1).addClass('selection')
+      $('.completed_todos dl dd:contains(' + this.itemClicked + ')').closest('dl').addClass('selection');
     }
   },
   toggleCompletion: function(event) {
-    console.log('toggling');
     event.stopImmediatePropagation();
     event.preventDefault();
     $(event.target).find('label').toggleClass('completed');
@@ -89,7 +129,6 @@ var toDoList = {
     this.refreshPage();
   },
   deleteItem: function(event) {
-    console.log('delete event');
     event.preventDefault();
     event.stopImmediatePropagation();
     var thisId = Number($(event.target).parents('tr').find('input').attr('id'));
@@ -100,10 +139,9 @@ var toDoList = {
       }
     });
     localStorage.setItem('todolist', JSON.stringify(result));
-    this.refreshPage(); // use this to retain place
+    this.refreshPage();
   },
   openTodo: function(event) {
-    console.log('open');
     event.preventDefault();
     event.stopImmediatePropagation();
     this.invokeModal(Number($(event.target).attr("for")));
@@ -119,23 +157,21 @@ var toDoList = {
   selectFromNav: function(event) {
     event.stopImmediatePropagation();
     event.preventDefault();
-    
-    //$(event.target).closest($('nav dl')).addClass('selection');
 
     if ($(event.target).closest($('div')).hasClass('completed_todos')) {
-      this.displayFromCompletedList()
+      this.displayFromCompletedList();
     } else {
       this.displayFromToDoList();
     }
   },
-  displayFromToDoList: function() { // 'click'? (naming)
-    this.itemClicked = $(event.target).closest($('dl')).index();
-    this.listType = 'all';
+  displayFromCompletedList: function() {
+    this.itemClicked = $(event.target).closest($('dl')).find('dd').text();
+    this.listType = 'completed';
     this.refreshPage();
   },
-  displayFromCompletedList: function() {
-    this.itemClicked = $(event.target).closest($('dl')).index();
-    this.listType = 'completed';
+  displayFromToDoList: function() {
+    this.itemClicked = $(event.target).closest($('dl')).find('dd').text();
+    this.listType = 'all';
     this.refreshPage();
   },
   renderNav: function(data) {
@@ -145,19 +181,53 @@ var toDoList = {
         dataCompleted.push(obj);
       }
     });
-    this.sortedAllToDos = this.sortDataByDate(data);
-    debugger;
-    this.sortedAllToDosByDate = this.convertToHbarsObj(this.sortedAllToDos);
+    this.completedToDos = dataCompleted;
+    this.allToDosNavObj = this.sortDataByDate(data);
+    this.completedToDosNavObj = this.sortDataByDate(dataCompleted);
 
-    //[{date: "", count: ""}]
-    //this.convertToHbarsObj(this.sortedAllToDos);
+    this.sortedAllToDos = this.sortDataForView(data);
+    this.sortedCompleted = this.sortDataForView(dataCompleted);
 
-    this.completedTodos = this.sortDataByDate(dataCompleted);
-    this.sortedCompletedByDate = this.convertToHbarsObj(this.completedTodos);
-    //[{date: "", count: ""}]
-    //this.convertToHbarsObj(this.completedTodos);
-
-    this.populateNavItems(this.sortedAllToDosByDate, this.sortedCompletedByDate, data, dataCompleted);
+    this.populateNavItems(this.allToDosNavObj, this.completedToDosNavObj, data, dataCompleted);
+  },
+  populateNavItems: function(toDosObj, completedObj, data, dataCompleted) {
+    this.populateToDos(toDosObj);
+    this.populatedCompleteds(completedObj);
+    this.updateCompletedTotal(dataCompleted);
+    this.updateTotalItems(data);
+  },
+  populateToDos: function(toDosObj) {
+    if (toDosObj.length === 0) {
+      toDosObj = {dummyObj: ""};
+    }
+    this.toDosTemplate = Handlebars.compile(this.toDosSource);
+    $('.nav_todos').html(this.toDosTemplate(toDosObj));
+  },
+  populatedCompleteds: function(completedObj) {
+    if (completedObj.length === 0) {
+      completedObj = {dummyObj: ""};
+    };
+    this.completedSourceTemplate = Handlebars.compile(this.completedSource);
+    $('.completed_todos').html(this.completedSourceTemplate(completedObj));
+  },
+  sortDataForView: function(data) {
+    var result = [];
+    var todos = [];
+    var dates = [];
+    data.forEach(function(obj) {
+      if (dates.indexOf(obj.date) === -1) {
+        dates.push(obj.date);
+        todos.push([obj]);
+      } else {
+        todos.forEach(function(todo) {
+          if (todo[0].date === obj.date) {
+            todo.push(obj);
+          }
+        });
+      }
+    });
+    result.push(dates, todos);
+    return result;
   },
   sortDataByDate: function(data) {
     var result = [];
@@ -168,54 +238,24 @@ var toDoList = {
         dates.push(obj.date);
         todos.push([obj]);
       } else {
-        todos.forEach(function(todoSet, index) { // otherwise we go through our todos (only 1)
-          if (todoSet[0].date === obj.date) {
-            todoSet.push(obj);
+        todos.forEach(function(todo) {
+          if (todo[0].date === obj.date) {
+            todo.push(obj);
           }
         });
       }
     });
-    result.push(dates, todos);
-    result[1] = result[1][0];
-    debugger;
-    return result; 
-  },
-  convertToHbarsObj: function(data) {
-    debugger;
-    if (data[0].length === 0) {
-      return [{date: "", count: ""}]
-    }
-    var result = [];
-    for (var i = 0; i < data.length; i += 1) {
+
+    for (var i = 0; i < dates.length; i += 1) {
       var newObj = {};
-      newObj["date"] = data[i][0];
-      newObj["count"] = data[1].length;
+      newObj["date"] = dates[i];
+      newObj["count"] = todos[i].length;
       result.push(newObj);
     }
     return result;
   },
-  populateNavItems: function(toDosObj, completedObj, data, dataCompleted) {
-    this.populateToDos(toDosObj);
-    this.populatedCompleteds(completedObj);
-    this.updateCompletedTotal(dataCompleted);
-    this.updateTotalItems(data);
-  },
-  populateToDos: function(toDosObj) {
-    if (toDosObj.length === 0) {
-      toDosObj = {test: "test"};
-    }
-    this.toDosTemplate = Handlebars.compile(this.toDosSource);
-    $('.nav_todos').html(this.toDosTemplate(toDosObj));
-  },
-  populatedCompleteds: function(completedObj) {
-    if (completedObj.length === 0) {
-      completedObj = {test: "test"};
-    };
-    this.completedSourceTemplate = Handlebars.compile(this.completedSource);
-    $('.completed_todos').html(this.completedSourceTemplate(completedObj));
-  },
   updateCompletedTotal: function(dataCompleted) {
-    $('#completed_todos_heading').next().text(dataCompleted.length.toString())
+    $('#completed_todos_heading').next().text(dataCompleted.length.toString());
   },
 };
 
@@ -233,7 +273,7 @@ var Modal = {
   getNextId: function() {
     var data = JSON.parse(localStorage.getItem('todolist'));
     if (data.length === 0) { 
-      return 1 
+      return 1;
     } else {
       var data = JSON.parse(localStorage.getItem('todolist')).map(function(obj) {
         return obj.id;
@@ -248,10 +288,10 @@ var Modal = {
           return todoObj.id === todoId;
       })[0];
       this.setInputFields(data);
-      $('#title').attr('placeholder', 'Item ' + todoId);
+      $('#title').attr('placeholder', 'Item1');
     } else if (todoId === undefined) {
       this.setInputFields();
-      $('#title').attr('placeholder', 'Item ' + this.getNextId());
+      $('#title').attr('placeholder', 'Item1');
     }
   },
   setInputFields: function(data) {
@@ -270,7 +310,6 @@ var Modal = {
     }
   },
   submitFormSave: function(id, event) {
-    console.log('save', id);
     event.preventDefault();
     event.stopImmediatePropagation();
     if (id) {
@@ -278,11 +317,11 @@ var Modal = {
     } else if (id === undefined) {
       this.createNewToDo();
     }
-
+    toDoList.itemClicked = "All Todos";
+    toDoList.listType = 'all';
     this.hideModal();
   },
   submitFormComplete: function(id, event) {
-    console.log('mark complete')
     event.preventDefault();
     event.stopImmediatePropagation();
     if (id === undefined) {

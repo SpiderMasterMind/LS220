@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
-    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ToDo List</title>
+    <meta charset="UTF-8"/>
+    <title>Todo Lists</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
-    <script src="scripts/mainfork.js"></script>
+    <script src="scripts/main.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   </head>
@@ -79,7 +79,7 @@
     </main>
     <div class="background">
       <div class="form">
-        <form action="" method="post">
+        <form action="POST" method="post">
           <fieldset>
             <div class="form_title">
               <label for="title">Title</label>
@@ -89,7 +89,7 @@
               <label for="date">Due Date</label>
                 <div class="select_style">
                   <select name="day" id="day">
-                    <option></option>  
+                    <option value=""></option>  
                     <option value="01">1</option>       
                     <option value="02">2</option>       
                     <option value="03">3</option>       
@@ -125,7 +125,7 @@
                 </div>
                 <div class="select_style">
                   <select name="month" id="month">
-                    <option></option>  
+                    <option value=""></option>  
                     <option value="01">January</option>       
                     <option value="02">February</option>       
                     <option value="03">March</option>       

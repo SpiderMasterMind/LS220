@@ -234,7 +234,7 @@ textarea {
 }
 
 /*MODAL BOX*/
-/*input[type="checkbox"]:checked + .background .form {*/
+
 .background .form {
   display: block;
   position: fixed;
@@ -381,7 +381,7 @@ textarea {
   /*  HAMBURGER TOGGLER */
 
   #menu-toggle {
-    display: none; /* hide the checkbox */
+    display: none;
   }
   #menu {
     display: none;
