@@ -2,10 +2,9 @@
 
 /* GENERAL */
 
-body {
+* {
   font: normal 16px Helvetica, Arial, sans-serif;
-  box-sizing: border-box;
-  font-weight: 200;
+  letter-spacing: 1px;
 }
 
 .wrapper {
@@ -18,6 +17,9 @@ nav {
   width: 335px;
   background: #464f77;
   padding-bottom: 600px;
+  font: normal 16px Helvetica, Arial, sans-serif;
+  color: #6b7292;
+  height: 100%;
 }
 
 /* HAMBURGER TOGGLE NORMAL VIEW */
@@ -31,7 +33,8 @@ nav {
 .info_bar span {
   display: inline-block;
   font-size: 21px;
-  margin-top: 76px;
+  margin-top: 73px;
+  margin-left: 17px;
 }
 
 .main_table thead th:hover {
@@ -40,11 +43,11 @@ nav {
 
 /* MAIN TODOS NUMBER */
 #main_count {
+  font-size: 14px;
   color: white;
   background-color: #148fd5;
   border-radius: 100%;
-  padding: 0 5px;
-  margin-left: 8px;
+  padding: 0 4px;
 }
 
 /* MAIN Todo List */
@@ -56,17 +59,17 @@ nav {
 }
 
 .main_table td:nth-child(n){
-  width: 95%;
-  padding: 14px 0 14px 0;
-}
-
-.main_table img {
-  mix-blend-mode: multiply;
+  width: 97%;
+  padding: 14px 0 14px 15px;
 }
 
 .main_table td:nth-child(2n) {
     padding-left: 10px;
     display: block;
+}
+
+.main_table td:first-child {
+  padding-top: 10px;
 }
 
 .main_table tbody td:nth-child(2n):hover {
@@ -78,9 +81,18 @@ nav {
     text-align: left;
     display: block;
     height: 10px;
-    padding: 6px 0;
+    padding: 6px 0 6px 14px;
     color: #148fd5;
     width: 160px;
+}
+
+.main_table img {
+  mix-blend-mode: multiply;
+}
+
+.main_table tbody td:nth-child(2n) {
+  width: 16px;
+  padding-right: 10px;
 }
 
 /* MAIN TABLE ICONS AND TEXT STYLES */
@@ -89,10 +101,6 @@ nav {
 .main_table th::before {
   content: url(images/icon_add.png);
   margin-right: 15px;
-}
-
-label {
-  margin-left: 20px;
 }
 
 tr label::before {
@@ -107,6 +115,10 @@ dd:hover {
 .completed {
   color: #b9b9b9;
   text-decoration: line-through;
+}
+
+.completed::before {
+  content: url(images/icon_complete.png);
 }
 
 /* HIGHLIGHTS TEXT */
@@ -137,51 +149,55 @@ dd:hover {
 /* NAV STYLING */
 /* POSITIONING */
 
-nav {
-  color: #6b7292;
-  font-weight: 300;
-  height: 100%;
-}
-
 .nav_todos {
   margin-top: 40px;
 }
 
 .nav_todos img {
   position: relative;
-  left: 88px;
-  top: 36px;
+  left: 100px;
+  top: 40px;
 }
 
 .completed_todos img {
   position: relative;
-  left: 88px;
-  top: 36px;
+  left: 100px;
+  top: 40px;
 }
 
 #nav_todos_heading,
 #completed_todos_heading {
   color: white;
   font-weight: 400;
+  font-size: 18px;
 }
 
 dl {
   width: 100%;
 }
 
-dd, dt{
+dd, dt {
   display: inline-block;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 dt {
-  color: rgba(255, 255, 255, 0.6);
   background-color: #6b7292;
   border-radius: 100%;
   padding: 0 4.5px;
+  font-size: 14px;
+}
+
+#nav_todos_heading + dt,
+#completed_todos_heading + dt {
+  border-radius: 40%;
+  width: 18px;
+  padding-left: 3px;
+  text-align: center;
 }
 
 dd {
-  padding: 11px 30px 11px 120px;
+  padding: 11px 30px 11px 137px;
 }
 
 .selection {
@@ -196,6 +212,7 @@ dd {
 
 dd {
   width: 110px;
+  height: 25px;
 }
 
 .strikeout {
@@ -238,8 +255,8 @@ textarea {
 .background .form {
   display: block;
   position: fixed;
-  top: 49%;
-  left: 56.5%;
+  top: 56.5%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: 576px;
   max-width: 100%;
@@ -271,23 +288,28 @@ textarea {
 .form_date label,
 .form_description label {
   display: inline-block;
+  font: normal 16px Helvetica, Arial, sans-serif;
+  letter-spacing: 1px;
   vertical-align: middle;
+  font-weight: 400;
+  color: #757575;
 }
 
 .form_title label {
-  padding-right: 55px;
+  padding: 10px 55px 0 0;
 }
 
 .form_title {
-  padding: 30px 40px 40px 30px;
+  padding: 30px 40px 23px 30px;
 }
 
 .form_title input[type="text"] {
   display: inline-block;
   width: 396px;
   margin-bottom: 0;
+  padding: 10px 0 10px 8px;
   vertical-align: middle;
-  height: 36px;
+  height: 38px;
   border: 1px solid #b3b3b3;
   float: right;
   box-sizing: border-box;
@@ -295,36 +317,50 @@ textarea {
 
 .form_date label {
   margin-left: 31px;
-  margin-right: 38px;
+  margin-right: 27px;
   padding-bottom: 44px;
+  position: relative;
+  top: 20px;
 }
 
 .form_date {
   box-sizing: border-box;
-  height: 62px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.date-separator {
+  display: inline-block;
+  position: relative;
 }
 
 .select_style {
     box-sizing: border-box;
-    padding: 5px 0;
+    padding: 8px 0;
     margin: 0;
     border: 1px solid #b3b3b3;
-    width: 22.3%;
-    height: 36px;
-
-    overflow: hidden;
-    background-color: #fff;
+    width: 21.1%;
+    border-radius: 7%;
     display: inline-block;
 }
 
 .select_style select {
-    padding: 5px 8px;
+    box-sizing: border-box;
     width: 100%;
     border: none;
     box-shadow: none;
     background-color: transparent;
     background-image: none;
 }
+
+select {
+  color: #757575;
+}
+
+/*option {
+  display: block;
+  margin-left: 25px;*/
+}*/
 
 .form_description {
   height: 80px;
@@ -334,13 +370,16 @@ textarea {
 .form_description label {
   padding: 0 4px 0 30px;
   margin-bottom: 0;
+  position: relative;
+  top: 12px;
 }
 
 textarea {
+  box-sizing: border-box;
   width: 394px;
   height: 144px;
   border: 1px solid #b3b3b3;
-  padding: 0;
+  padding: 10px;
   resize: none;
   float: right;
   margin-right: 40px
@@ -355,9 +394,11 @@ textarea {
 }
 
 .submit_row button {
+  box-sizing: border-box;
   display: inline-block;
-  height: 30px;
-  width: 42.3%;
+  height: 38px;
+  padding: 10px 0;
+  width: 40%;
   border: none;
   color: #ffffff;
   text-decoration: none;

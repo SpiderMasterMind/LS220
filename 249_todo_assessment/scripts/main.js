@@ -5,15 +5,15 @@ var toDoList = {
     this.toDosSource = $('#nav-todos-template').html();
     this.completedSource = $('#completed-todos-template').html();
     this.initialiseStorage();
-    this.refreshPage();
-    this.sortedAllToDos;
-    this.sortedCompleted;
     this.CompletedToDosNavObj;
     this.allToDosNavObj;
     this.completedToDos;
     this.listType = 'all';
     this.itemClicked = 'All Todos';
     this.refreshPage();
+  },
+  updateCompletedTotal: function(dataCompleted) {
+    $('#completed_todos_heading').next().text(dataCompleted.length.toString());
   },
   initialiseStorage: function() {
     if (localStorage.getItem('todolist') === null) {
@@ -46,41 +46,41 @@ var toDoList = {
   },
   renderViewportItems: function() {
     var data = JSON.parse(localStorage.getItem('todolist'));
+    this.updateCollections(data);
+    this.populateNavItems(this.allToDosNavObj, this.completedToDosNavObj, data);
     if (this.listType === undefined) {
       $('.main_table tbody').html(this.mainItemsTemplate(data));
     } else {
       this.renderRefinedItems();
     }
     this.markCompleteItems(data);
-    this.renderNav(data);
     this.setNavHighlight();
   },
   renderRefinedItems: function() {
     var itemDate = this.itemClicked;
     var data = JSON.parse(localStorage.getItem('todolist'));
-    var result;
     this.sortCompletedItems(data);
-
+    this.processMainListByNavSelection(data);
+    this.setHeadingInfo();
+  },
+  processMainListByNavSelection: function(data) {
     if (this.itemClicked === "All Todos") {
       $('.main_table tbody').html(this.mainItemsTemplate(data));
     } else if (this.listType === 'all') {
-      result = data.filter(function(obj) {
-        if (obj.date === itemDate) {
-          return true;
-        }
-      });
-      $('.main_table tbody').html(this.mainItemsTemplate(result));
+      $('.main_table tbody').html(this.mainItemsTemplate(this.filterToDosByDate(data, this.itemClicked)));
     } else if (this.listType === 'completed' && this.itemClicked === 'Completed') {
       $('.main_table tbody').html(this.mainItemsTemplate(this.completedToDos));
     } else if (this.listType === 'completed') {
-      result = this.completedToDos.filter(function(obj) {
+      $('.main_table tbody').html(this.mainItemsTemplate(this.filterToDosByDate(this.completedToDos, this.itemClicked)));
+    }
+  },
+  filterToDosByDate: function(collection, itemDate) {
+    var result = collection.filter(function(obj) {
         if (obj.date === itemDate) {
           return true;
         }
       });
-      $('.main_table tbody').html(this.mainItemsTemplate(result));
-    }
-    this.setHeadingInfo();
+    return result;
   },
   markCompleteItems: function(data) {
     $.each(data, function(index, obj) {
@@ -174,7 +174,18 @@ var toDoList = {
     this.listType = 'all';
     this.refreshPage();
   },
-  renderNav: function(data) {
+  updateCollections: function(data) {
+    this.updateCompletedItems(data);
+    this.allToDosNavObj = this.sortDataByDate(data);
+    this.completedToDosNavObj = this.sortDataByDate(this.completedToDos);
+  },
+  populateNavItems: function(toDosObj, completedObj, data) {
+    this.populateToDos(toDosObj);
+    this.populatedCompleteds(completedObj);
+    this.updateCompletedTotal(this.completedToDos);
+    this.updateTotalItems(data);
+  },
+  updateCompletedItems: function(data) {
     var dataCompleted = [];
     data.forEach(function(obj) {
       if (obj.completed) {
@@ -182,19 +193,6 @@ var toDoList = {
       }
     });
     this.completedToDos = dataCompleted;
-    this.allToDosNavObj = this.sortDataByDate(data);
-    this.completedToDosNavObj = this.sortDataByDate(dataCompleted);
-
-    this.sortedAllToDos = this.sortDataForView(data);
-    this.sortedCompleted = this.sortDataForView(dataCompleted);
-
-    this.populateNavItems(this.allToDosNavObj, this.completedToDosNavObj, data, dataCompleted);
-  },
-  populateNavItems: function(toDosObj, completedObj, data, dataCompleted) {
-    this.populateToDos(toDosObj);
-    this.populatedCompleteds(completedObj);
-    this.updateCompletedTotal(dataCompleted);
-    this.updateTotalItems(data);
   },
   populateToDos: function(toDosObj) {
     if (toDosObj.length === 0) {
@@ -210,29 +208,9 @@ var toDoList = {
     this.completedSourceTemplate = Handlebars.compile(this.completedSource);
     $('.completed_todos').html(this.completedSourceTemplate(completedObj));
   },
-  sortDataForView: function(data) {
-    var result = [];
-    var todos = [];
-    var dates = [];
-    data.forEach(function(obj) {
-      if (dates.indexOf(obj.date) === -1) {
-        dates.push(obj.date);
-        todos.push([obj]);
-      } else {
-        todos.forEach(function(todo) {
-          if (todo[0].date === obj.date) {
-            todo.push(obj);
-          }
-        });
-      }
-    });
-    result.push(dates, todos);
-    return result;
-  },
   sortDataByDate: function(data) {
-    var result = [];
-    var todos = [];
     var dates = [];
+    var todos = [];
     data.forEach(function(obj) {
       if (dates.indexOf(obj.date) === -1) {
         dates.push(obj.date);
@@ -246,6 +224,10 @@ var toDoList = {
       }
     });
 
+    return this.formatAsHbarsObj(dates, todos);
+  },
+  formatAsHbarsObj: function(dates, todos) {
+    var result = [];
     for (var i = 0; i < dates.length; i += 1) {
       var newObj = {};
       newObj["date"] = dates[i];
@@ -253,9 +235,6 @@ var toDoList = {
       result.push(newObj);
     }
     return result;
-  },
-  updateCompletedTotal: function(dataCompleted) {
-    $('#completed_todos_heading').next().text(dataCompleted.length.toString());
   },
 };
 
@@ -346,10 +325,7 @@ var Modal = {
   updateInStorage: function(id) {
     var todo = $('form').serializeArray();
     var thisId = id;
-    todo.push({
-      name: "id",
-      value: thisId,
-    });
+    todo.push({ name: "id", value: thisId, });
     var newToDo = Object.create(ToDo).init(todo);
     var collection = (JSON.parse(localStorage.getItem('todolist')));
     var result = collection.map(function(todo) { 
@@ -364,10 +340,7 @@ var Modal = {
   createNewToDo: function() {
     var todo = $('form').serializeArray();
     var thisId = this.getNextId();
-    todo.push({
-      name: "id",
-      value: thisId,
-    });
+    todo.push({ name: "id", value: thisId, });
     var newToDo = Object.create(ToDo).init(todo);
     var collection = (JSON.parse(localStorage.getItem('todolist')));
     collection.push(newToDo);
