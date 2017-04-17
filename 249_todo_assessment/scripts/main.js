@@ -1,3 +1,4 @@
+// retain page view when editing a completed todo
 var toDoList = {
   init: function() {
     this.mainItemsSource = $('#todo-item').html();
@@ -295,9 +296,11 @@ var Modal = {
       this.updateInStorage(id);
     } else if (id === undefined) {
       this.createNewToDo();
+      toDoList.itemClicked = "All Todos";
+      toDoList.listType = 'all';
     }
-    toDoList.itemClicked = "All Todos";
-    toDoList.listType = 'all';
+    // toDoList.itemClicked = "All Todos";
+    // toDoList.listType = 'all';
     this.hideModal();
   },
   submitFormComplete: function(id, event) {
@@ -328,6 +331,7 @@ var Modal = {
     todo.push({ name: "id", value: thisId, });
     var newToDo = Object.create(ToDo).init(todo);
     var collection = (JSON.parse(localStorage.getItem('todolist')));
+    // searches todos, and gets new object for only the todo to edit
     var result = collection.map(function(todo) { 
       if (todo.id !== thisId) {
         return todo;
@@ -336,7 +340,6 @@ var Modal = {
         return newToDo;
       }
     });
-    // leaves other ids unchanged, otherwise returns
     localStorage.setItem('todolist', JSON.stringify(result));
   },
   createNewToDo: function() {
