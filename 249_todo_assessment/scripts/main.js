@@ -332,9 +332,11 @@ var Modal = {
       if (todo.id !== thisId) {
         return todo;
       } else {
+        newToDo.completed = todo.completed;
         return newToDo;
       }
     });
+    // leaves other ids unchanged, otherwise returns
     localStorage.setItem('todolist', JSON.stringify(result));
   },
   createNewToDo: function() {
